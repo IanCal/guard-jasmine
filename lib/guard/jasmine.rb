@@ -84,6 +84,16 @@ module Guard
       self.last_failed_paths = []
     end
 
+    # Repeatedly checks for the Jasmine runner
+    #
+    def runner_available?(options, attempts = 3)
+        available = false
+        3.times do |attempt|
+            available ||= Jasmine.runner_available?(options)
+        end
+        available
+    end
+
     # Gets called once when Guard starts.
     #
     # @raise [:task_has_failed] when run_on_change has failed
@@ -93,7 +103,7 @@ module Guard
 
         Server.start(options) unless options[:server] == :none
 
-        if Jasmine.runner_available?(options)
+        if runner_available?(options)
           run_all if options[:all_on_start]
         end
       else
